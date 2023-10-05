@@ -55,7 +55,7 @@ def main():
         for text in texts:
             print(get_api_password_hashes(text.strip()))
 
-def check_password():
+def check_password(event=None):
     """Check a single password from GUI input."""
     password = password_entry.get()
     if password:
@@ -80,6 +80,7 @@ root.geometry("500x300")
 password_text = tk.StringVar()
 password_entry = tk.Entry(root, textvariable=password_text)
 password_entry.pack()
+password_entry.bind('<Return>', check_password)  # Bind the Return key
 
 check_button = tk.Button(root, text="Check Password", command=check_password)
 check_button.pack()
