@@ -28,8 +28,8 @@ def get_api_password_leaks_count(hashes, hash_to_check):
             return count
     return 0
 
-# Gets password from password.txt 
-def get_text_password():
+# Gets passwords from password.txt 
+def get_text_passwords():
     password_text_path = os.path.join(os.getcwd(), "password.txt")
     if not os.path.exists(password_text_path):
         open(password_text_path, 'w').close()
@@ -37,22 +37,23 @@ def get_text_password():
         sys.exit(0)
 
     with open(password_text_path, 'r') as file:
-        password_text = file.read()
+        password_texts = file.readlines()
 
-    return password_text
+    return password_texts
 
-# Takes argv and text file
+# Takes argv and text file for passwords, and
 def main():
     argv = sys.argv[1:]
-    text = get_text_password()
+    texts = get_text_passwords()
 
     if argv:
         for item in argv:
             print(get_api_password_hashes(item))
         sys.exit(0)
     
-    if text:
-        print(get_api_password_hashes(text))
+    if texts:
+        for text in texts:
+            print(get_api_password_hashes(text.strip()))
 
 def check_password():
     password = password_entry.get()
@@ -62,11 +63,14 @@ def check_password():
     else:
         messagebox.showerror("Error", "Please enter a password.")
 
-def check_file_password():
-    text = get_text_password()
-    if text:
-        result = get_api_password_hashes(text)
-        result_text.set(f"Your password was found {result} times in pwned passwords database.")
+def check_file_passwords():
+    texts = get_text_passwords()
+    if texts:
+        results = []
+        for text in texts:
+            result = get_api_password_hashes(text.strip())
+            results.append(f"Password: {text.strip()}, was found {result} times")
+        result_text.set('\n'.join(results))
         
 root = tk.Tk()
 
@@ -77,7 +81,7 @@ password_entry.pack()
 check_button = tk.Button(root, text="Check Password", command=check_password)
 check_button.pack()
 
-check_file_button = tk.Button(root, text="Check File Password", command=check_file_password)
+check_file_button = tk.Button(root, text="Check Passwords from text file", command=check_file_passwords)
 check_file_button.pack()
 
 result_text = tk.StringVar()
