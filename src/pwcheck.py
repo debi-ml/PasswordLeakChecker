@@ -5,31 +5,31 @@ import os
 import tkinter as tk
 from tkinter import messagebox
 
-# Takes first 5 characters of SHA1 hash of the password and sends a request to api, returns response
 def request_api_data(input_char):
+    """Send a request to the API with the first 5 characters of the SHA1 hash of the password."""
     url = "https://api.pwnedpasswords.com/range/" + input_char
     res = requests.get(url)
     if res.status_code != 200:
-        raise RuntimeError(f"Error code {res.status_code}, check the api and try again.")
+        raise RuntimeError(f"Error fetching data: {res.status_code}")
     return res
 
-# Takes password and returns  the number of times pw was pwned
 def get_api_password_hashes(password):
+    """Return the number of times a password was found in pwned passwords database."""
     sha1password = hashlib.sha1(password.encode("utf-8")).hexdigest().upper()
     first5_char, tail = sha1password[:5], sha1password[5:]
     response = request_api_data(first5_char)
     return get_api_password_leaks_count(response, tail)
 
-# Takes hashes from api, and the tail of sha1 of password, outputs the number of times pw was pwned
 def get_api_password_leaks_count(hashes, hash_to_check):
+    """Check if our password tail is in the response and if so, return the count."""
     hashes = (line.split(":") for line in hashes.text.splitlines())
     for h, count in hashes:
         if h == hash_to_check:
             return count
     return 0
 
-# Gets passwords from password.txt 
 def get_text_passwords():
+    """Read passwords from a text file. If file doesn't exist, create it and open it."""
     password_text_path = os.path.join(os.getcwd(), "password.txt")
     if not os.path.exists(password_text_path):
         open(password_text_path, 'w').close()
@@ -41,8 +41,8 @@ def get_text_passwords():
 
     return password_texts
 
-# Takes argv and text file for passwords, and
 def main():
+    """Main function to handle command line arguments or read from text file."""
     argv = sys.argv[1:]
     texts = get_text_passwords()
 
@@ -56,6 +56,7 @@ def main():
             print(get_api_password_hashes(text.strip()))
 
 def check_password():
+    """Check a single password from GUI input."""
     password = password_entry.get()
     if password:
         result = get_api_password_hashes(password)
@@ -64,6 +65,7 @@ def check_password():
         messagebox.showerror("Error", "Please enter a password.")
 
 def check_file_passwords():
+    """Check multiple passwords from text file."""
     texts = get_text_passwords()
     if texts:
         results = []
@@ -73,6 +75,7 @@ def check_file_passwords():
         result_text.set('\n'.join(results))
         
 root = tk.Tk()
+root.geometry("500x300")
 
 password_text = tk.StringVar()
 password_entry = tk.Entry(root, textvariable=password_text)
