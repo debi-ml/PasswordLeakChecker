@@ -47,9 +47,9 @@ def main():
     argv = sys.argv[1:]
     texts = get_text_passwords()
 
-    if argv:
+    if len(argv) > 0:
         for item in argv:
-            print(get_api_password_hashes(item))
+            print(f"your password {item} has been pwned {get_api_password_hashes(item)} times")
         sys.exit(0)
     
     if texts:
@@ -75,25 +75,26 @@ def check_file_passwords():
             results.append(f"Password: {text.strip()}, was found {result} times")
         result_text.set('\n'.join(results))
         
-root = tk.Tk()
-root.geometry("500x300")
 
-password_text = tk.StringVar()
-password_entry = tk.Entry(root, textvariable=password_text)
-password_entry.pack()
-password_entry.bind('<Return>', check_password)  # Bind the Return key
-
-check_button = tk.Button(root, text="Check Password", command=check_password)
-check_button.pack()
-
-check_file_button = tk.Button(root, text="Check Passwords from text file", command=check_file_passwords)
-check_file_button.pack()
-
-result_text = tk.StringVar()
-result_label = tk.Label(root, textvariable=result_text)
-result_label.pack()
-
-root.mainloop()
 
 if __name__ == "__main__":
     main()
+    root = tk.Tk()
+    root.geometry("500x300")
+
+    password_text = tk.StringVar()
+    password_entry = tk.Entry(root, textvariable=password_text)
+    password_entry.pack()
+    password_entry.bind('<Return>', check_password)  # Bind the Return key
+
+    check_button = tk.Button(root, text="Check Password", command=check_password)
+    check_button.pack()
+
+    check_file_button = tk.Button(root, text="Check Passwords from text file", command=check_file_passwords)
+    check_file_button.pack()
+
+    result_text = tk.StringVar()
+    result_label = tk.Label(root, textvariable=result_text)
+    result_label.pack()
+
+    root.mainloop()
