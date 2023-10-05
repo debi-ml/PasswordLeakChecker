@@ -34,7 +34,8 @@ def get_text_passwords():
     if not os.path.exists(password_text_path):
         open(password_text_path, 'w').close()
         os.startfile(password_text_path)
-        sys.exit(0)
+        result_text.set("password.txt created, type one password per line.")
+        return []
 
     with open(password_text_path, 'r') as file:
         password_texts = file.readlines()
